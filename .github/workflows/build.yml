@@ -24,17 +24,14 @@ jobs:
           sudo apt update
           sudo apt install -y live-build debootstrap xorriso isolinux syslinux-utils squashfs-tools
 
-      - name: Configure live-build (Preset: ${{ matrix.preset }})
+      - name: Configure live-build
         run: |
           sudo lb clean --purge
-          lb config --distribution bookworm \
-                    --archive-area main \
-                    --debootstrap-options "--variant=minbase" \
-                    --bootappend-live "quiet splash"
+          lb config --distribution bookworm --archive-area main --debootstrap-options "--variant=minbase" --bootappend-live "quiet splash"
           mkdir -p config/includes.chroot/etc/
           echo "LEO_PRESET=${{ matrix.preset }}" | sudo tee config/includes.chroot/etc/leo-preset
 
-      - name: Customize system (Preset: ${{ matrix.preset }})
+      - name: Customize system
         run: |
           mkdir -p config/hooks/live/
 
@@ -47,7 +44,7 @@ jobs:
           if [ $ZRAM_SIZE -gt 8192 ]; then ZRAM_SIZE=8192; fi
           echo "PERCENT=50" > /etc/default/zramswap
           echo "ALGO=zstd" >> /etc/default/zramswap
-          echo "SIZE=${ZRAM_SIZE}" >> /etc/default/zramswap
+          echo "SIZE=$ZRAM_SIZE" >> /etc/default/zramswap
           echo "PRIORITY=100" >> /etc/default/zramswap
           systemctl enable zramswap.service
           echo "vm.swappiness=100" >> /etc/sysctl.conf
@@ -71,7 +68,7 @@ jobs:
           if [ $ZRAM_SIZE -gt 4096 ]; then ZRAM_SIZE=4096; fi
           echo "PERCENT=50" > /etc/default/zramswap
           echo "ALGO=lz4" >> /etc/default/zramswap
-          echo "SIZE=${ZRAM_SIZE}" >> /etc/default/zramswap
+          echo "SIZE=$ZRAM_SIZE" >> /etc/default/zramswap
           echo "PRIORITY=100" >> /etc/default/zramswap
           systemctl enable zramswap.service
           echo "vm.swappiness=60" >> /etc/sysctl.conf
@@ -89,7 +86,7 @@ jobs:
           if [ $ZRAM_SIZE -gt 4096 ]; then ZRAM_SIZE=4096; fi
           echo "PERCENT=25" > /etc/default/zramswap
           echo "ALGO=lz4" >> /etc/default/zramswap
-          echo "SIZE=${ZRAM_SIZE}" >> /etc/default/zramswap
+          echo "SIZE=$ZRAM_SIZE" >> /etc/default/zramswap
           echo "PRIORITY=100" >> /etc/default/zramswap
           systemctl enable zramswap.service
           echo "vm.swappiness=30" >> /etc/sysctl.conf
